@@ -1,0 +1,218 @@
+/* PlantDoc AI - Custom Agricultural Theme Stylesheet */
+
+:root {
+  --forest-dark: #0d2818;
+  --forest: #1b4332;
+  --forest-light: #2d6a4f;
+  --emerald: #52b788;
+  --emerald-light: #95d5b2;
+  --emerald-tint: #d8f3dc;
+  --earth: #bc6c25;
+  --soil: #6c584c;
+  --surface-healthy: #f0fdf4;
+  --surface-disease: #fffbeb;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: #2b2d42;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* Brand Theme Utilities */
+.bg-forest {
+  background-color: var(--forest) !important;
+}
+
+.bg-forest-subtle {
+  background-color: #e8f5ee !important;
+}
+
+.text-forest {
+  color: var(--forest) !important;
+}
+
+.text-emerald {
+  color: var(--emerald) !important;
+}
+
+.text-emerald-light {
+  color: var(--emerald-light) !important;
+}
+
+.border-forest-dark {
+  border-color: var(--forest-dark) !important;
+}
+
+.btn-forest {
+  background-color: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-forest:hover, .btn-forest:focus {
+  background-color: var(--forest-light);
+  border-color: var(--forest-light);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-outline-forest {
+  color: var(--forest);
+  border-color: var(--forest);
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-forest:hover {
+  background-color: var(--forest);
+  color: #ffffff;
+}
+
+.btn-emerald {
+  background-color: var(--emerald);
+  border-color: var(--emerald);
+  color: #ffffff;
+}
+
+.btn-emerald:hover {
+  background-color: var(--forest-light);
+  border-color: var(--forest-light);
+  color: #ffffff;
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest) 60%, var(--forest-light) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+/* Upload Dropzone */
+.border-dashed {
+  border: 2px dashed #cbd5e1;
+  transition: all 0.25s ease;
+}
+
+.upload-dropzone {
+  background-color: #f8fafc;
+  cursor: pointer;
+}
+
+.upload-dropzone:hover {
+  border-color: var(--emerald);
+  background-color: #f1f8f5;
+}
+
+.bg-light-tint {
+  background-color: #ecfdf5 !important;
+  border-color: var(--emerald) !important;
+}
+
+.upload-icon-wrapper {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #e8f5ee;
+  transition: transform 0.2s ease;
+}
+
+.upload-dropzone:hover .upload-icon-wrapper {
+  transform: scale(1.08);
+}
+
+.preview-image {
+  max-height: 280px;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+}
+
+.result-specimen-img {
+  max-height: 260px;
+  width: 100%;
+  object-fit: contain;
+  background-color: #000000;
+}
+
+/* Diagnosis Banner States */
+.bg-healthy-subtle {
+  background: linear-gradient(to right, #ecfdf5, #f0fdf4);
+  border-left: 6px solid #10b981;
+}
+
+.bg-disease-subtle {
+  background: linear-gradient(to right, #fffbeb, #fef3c7);
+  border-left: 6px solid #f59e0b;
+}
+
+.crop-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.crop-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Utilities */
+.max-w-700 {
+  max-width: 700px;
+}
+
+.max-w-900 {
+  max-width: 900px;
+}
+
+.min-w-200 {
+  min-width: 200px;
+}
+
+/* Print Optimization for Diagnostic PDF Reports */
+@media print {
+  body {
+    background-color: #ffffff !important;
+  }
+  .d-print-none, nav, footer, .btn {
+    display: none !important;
+  }
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+    break-inside: avoid;
+  }
+  .diagnostic-banner {
+    border-left: 4px solid #1b4332 !important;
+  }
+}

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlantDoc AI - Plant Disease Detection Using Deep Learning</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-forest sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex items-center gap-2 fw-bold" href="/">
+        <i class="bi bi-flower1 fs-4 text-emerald"></i>
+        <span>PlantDoc<span class="text-emerald">.AI</span></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-2">
+          <li class="nav-item">
+            <a class="nav-link active" href="/"><i class="bi bi-house-door me-1"></i> Diagnose</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#crops"><i class="bi bi-grid-3x3-gap me-1"></i> Crops & Diseases</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about"><i class="bi bi-cpu me-1"></i> Model Architecture</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero-section py-5 text-center text-white">
+    <div class="container py-3">
+      <div class="d-inline-flex align-items-center gap-2 mb-3 text-emerald-light fw-medium">
+        <i class="bi bi-shield-check"></i> MobileNetV2 Deep Learning &middot; Real-Time Foliar Pathology
+      </div>
+      <h1 class="display-4 fw-bold mb-3">Plant Leaf Disease Detection</h1>
+      <p class="lead max-w-700 mx-auto text-light-subtle">
+        Instantly identify crop pathologies from leaf photographs. Receive diagnostic confidence, pathogen etiology, and verified agronomic treatment protocols.
+      </p>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container my-5">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="row justify-content-center mb-4">
+          <div class="col-lg-8">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        
+        <!-- Upload Card -->
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-5">
+          <div class="card-header bg-white border-bottom p-4">
+            <h2 class="h5 fw-bold mb-1 text-dark">
+              <i class="bi bi-cloud-arrow-up text-forest me-2"></i>Upload Leaf Specimen
+            </h2>
+            <p class="text-muted small mb-0">High-resolution single leaf photo against a neutral or clean background produces the highest classification accuracy.</p>
+          </div>
+
+          <div class="card-body p-4 p-md-5">
+            <form id="uploadForm" action="/predict" method="POST" enctype="multipart/form-data">
+              
+              <!-- Dropzone Area -->
+              <div id="dropZone" class="upload-dropzone rounded-3 p-5 text-center border-dashed mb-4">
+                <input type="file" id="fileInput" name="file" accept="image/png, image/jpeg, image/jpg, image/webp" class="d-none" required>
+                
+                <div id="dropPrompt">
+                  <div class="upload-icon-wrapper mb-3">
+                    <i class="bi bi-camera fs-1 text-forest"></i>
+                  </div>
+                  <h3 class="h6 fw-bold mb-2">Drag &amp; drop leaf photo here</h3>
+                  <p class="text-muted small mb-3">or browse from your computer / phone camera</p>
+                  <button type="button" class="btn btn-outline-forest btn-sm px-4 rounded-pill" onclick="document.getElementById('fileInput').click()">
+                    Browse Files
+                  </button>
+                  <div class="text-muted mt-3" style="font-size: 0.75rem;">Supports JPG, PNG, WEBP &middot; Max 16MB</div>
+                </div>
+
+                <!-- Preview Box -->
+                <div id="previewContainer" class="d-none">
+                  <div class="position-relative d-inline-block">
+                    <img id="imagePreview" src="" alt="Specimen Preview" class="img-fluid rounded-3 shadow-sm preview-image">
+                    <button type="button" id="removeBtn" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle" title="Remove image">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                  <div class="mt-3 text-muted small fw-medium" id="fileNameDisplay"></div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" id="submitBtn" class="btn btn-forest btn-lg w-100 py-3 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow" disabled>
+                <i class="bi bi-search"></i>
+                <span id="btnText">Analyze Specimen with MobileNetV2</span>
+                <span id="btnSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Quick Tips Footer -->
+          <div class="card-footer bg-light border-top p-4">
+            <div class="row g-3 text-muted small">
+              <div class="col-md-4 d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-success"></i> Focused leaf close-up
+              </div>
+              <div class="col-md-4 d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-success"></i> Good natural daylight
+              </div>
+              <div class="col-md-4 d-flex align-items-center gap-2">
+                <i class="bi bi-x-circle-fill text-danger"></i> Avoid severe blur / glare
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Supported Crops Section -->
+    <section id="crops" class="py-4">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold mb-2">Supported Crops &amp; Pathologies</h2>
+        <p class="text-muted">Trained across {{ total_classes }} distinct plant disease and healthy leaf classes.</p>
+      </div>
+
+      <div class="row g-4">
+        {% for crop, diseases in crops_summary.items() %}
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 crop-card">
+              <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <h3 class="h5 fw-bold mb-0 text-forest">{{ crop }}</h3>
+                  <span class="badge bg-forest-subtle text-forest rounded-pill">{{ diseases|length }} Classes</span>
+                </div>
+                <ul class="list-unstyled mb-0 small text-secondary">
+                  {% for d in diseases %}
+                    <li class="py-1 d-flex align-items-start gap-2">
+                      <i class="bi bi-record2 text-emerald mt-1"></i>
+                      <span>{{ d }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-forest text-light py-4 mt-5 border-top border-forest-dark">
+    <div class="container text-center small">
+      <p class="mb-1 fw-medium">PlantDoc AI &mdash; Open-Source Plant Disease Detection</p>
+      <p class="text-muted mb-0">Powered by Flask, TensorFlow, MobileNetV2 &amp; Bootstrap 5</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Client-Side Drag-Drop & Preview Script -->
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const dropPrompt = document.getElementById('dropPrompt');
+    const previewContainer = document.getElementById('previewContainer');
+    const imagePreview = document.getElementById('imagePreview');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const removeBtn = document.getElementById('removeBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const uploadForm = document.getElementById('uploadForm');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+
+    function handleFile(file) {
+      if (!file || !file.type.startsWith('image/')) {
+        alert('Please select a valid image file (PNG, JPG, JPEG, WEBP).');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imagePreview.src = e.target.result;
+        fileNameDisplay.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        dropPrompt.classList.add('d-none');
+        previewContainer.classList.remove('d-none');
+        submitBtn.removeAttribute('disabled');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add('border-primary', 'bg-light-tint');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('border-primary', 'bg-light-tint');
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files && files[0]) {
+        fileInput.files = files;
+        handleFile(files[0]);
+      }
+    });
+
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.value = '';
+      imagePreview.src = '';
+      previewContainer.classList.add('d-none');
+      dropPrompt.classList.remove('d-none');
+      submitBtn.setAttribute('disabled', 'true');
+    });
+
+    uploadForm.addEventListener('submit', () => {
+      submitBtn.setAttribute('disabled', 'true');
+      btnText.textContent = 'Processing with Deep Learning Model...';
+      btnSpinner.classList.remove('d-none');
+    });
+  </script>
+</body>
+</html>

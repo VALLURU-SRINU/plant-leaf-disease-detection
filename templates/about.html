@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Architecture &amp; Methodology | PlantDoc AI</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-body-tertiary">
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-forest sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="/">
+        <i class="bi bi-flower1 fs-4 text-emerald"></i>
+        <span>PlantDoc<span class="text-emerald">.AI</span></span>
+      </a>
+      <div class="ms-auto">
+        <a href="/" class="btn btn-outline-light btn-sm rounded-pill px-3">
+          <i class="bi bi-arrow-left me-1"></i> Back to Scanner
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-5 max-w-900">
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+      <h1 class="display-6 fw-bold text-forest mb-3">Model Architecture &amp; Methodology</h1>
+      <p class="lead text-secondary">
+        PlantDoc AI leverages Transfer Learning with Google's MobileNetV2 architecture fine-tuned on the PlantVillage foliar disease dataset.
+      </p>
+
+      <hr class="my-4">
+
+      <h2 class="h5 fw-bold text-dark mt-4 mb-3">1. Why MobileNetV2?</h2>
+      <p class="text-secondary">
+        MobileNetV2 uses depthwise separable convolutions with inverted residual blocks and linear bottlenecks. This drastically decreases the model parameter count to approximately 3.5 million parameters (~14 MB), while preserving over 95% Top-1 classification accuracy. It executes inference in under 50ms on commodity CPUs and mobile devices.
+      </p>
+
+      <div class="bg-light p-4 rounded-3 border my-3">
+        <h3 class="h6 fw-bold mb-2">Neural Network Pipeline</h3>
+        <ol class="small text-secondary mb-0">
+          <li><strong>Input:</strong> Normalized RGB image (224 &times; 224 &times; 3)</li>
+          <li><strong>Base Backbone:</strong> MobileNetV2 feature extractor pre-trained on ImageNet</li>
+          <li><strong>Pooling:</strong> GlobalAveragePooling2D reducing spatial dimensions</li>
+          <li><strong>Regularization:</strong> Batch Normalization + Dropout (0.35 rate) to prevent overfitting</li>
+          <li><strong>Dense Representation:</strong> Fully connected 256-unit layer with ReLU activation</li>
+          <li><strong>Output:</strong> Softmax activation producing class posterior probabilities</li>
+        </ol>
+      </div>
+
+      <h2 class="h5 fw-bold text-dark mt-4 mb-3">2. Training &amp; Validation Protocol</h2>
+      <p class="text-secondary">
+        The model uses real-time data augmentation including random rotations (&plusmn;25&deg;), zoom (&plusmn;20%), horizontal flipping, and shear. Optimization is driven by Adam optimizer ($lr=5\times 10^{-4}$) with categorical cross-entropy loss and dynamic learning rate reduction on plateau.
+      </p>
+
+      <div class="mt-4 pt-3 border-top d-flex gap-3">
+        <a href="/" class="btn btn-forest rounded-3 px-4">Try Leaf Scanner</a>
+        <a href="https://github.com" target="_blank" class="btn btn-outline-forest rounded-3 px-4">
+          <i class="bi bi-github me-1"></i> Star on GitHub
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-forest text-light py-4 mt-5 border-top border-forest-dark">
+    <div class="container text-center small">
+      <p class="mb-1 fw-medium">PlantDoc AI &mdash; Open-Source Plant Disease Detection</p>
+      <p class="text-muted mb-0">Powered by Flask, TensorFlow, MobileNetV2 &amp; Bootstrap 5</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

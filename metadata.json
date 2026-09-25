@@ -1,0 +1,6 @@
+{
+  "name": "PlantDoc AI - Plant Disease Detection & Flask ML Project",
+  "description": "Deep learning plant leaf disease classification system with MobileNetV2, Flask web application, instant diagnosis, and complete open-source project generator.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
